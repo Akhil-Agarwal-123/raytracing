@@ -1,0 +1,133 @@
+# ==========================================
+# OS Files (macOS)
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+__MACOSX/
+
+# ==========================================
+# Python
+# ==========================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+*.hypothesis/
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb~
+profile_default/
+ipython_config.py
+
+# PEP 582; used by e.g. `pipx` or `pyflow`
+__pypackages__/
+
+# ==========================================
+# JetBrains IDEs (PyCharm, IntelliJ, etc.)
+# ==========================================
+.idea/
+*.iml
+*.iws
+out/
+.idea_modules/
+
+# ==========================================
+# VS Code (just in case)
+# ==========================================
+.vscode/
+.history/
+
+# ==========================================
+# Logs / temp
+# ==========================================
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+.project
+.settings/
+.cache/
+*.bak
+
+# ==========================================
+# Misc
+# ==========================================
+# Local env files
+*.env
+*.local
+.env.*
+
+# SQLite / local db
+*.sqlite3
+*.db
+
+# Lock files
+poetry.lock
+Pipfile.lock
+yarn.lock
+package-lock.json
+
+# ==========================================
+# Node / frontend (if mixed project)
+# ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
