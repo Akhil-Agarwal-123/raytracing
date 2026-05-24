@@ -1,7 +1,7 @@
 #ifndef RAYTRACING_COLOR_H
 #define RAYTRACING_COLOR_H
 
-#include "vec3.h"
+#include "../geometry/vec3.h"
 
 #include <iostream>
 

@@ -7,29 +7,26 @@
 class output_image {
 public:
     int height, width;
-    std::vector<std::vector<color>> pixels;
+    std::vector<color> pixels;
 
     output_image(const int height, const int width) : height(height), width(width) {
-        pixels = std::vector<std::vector<color>>(height);
-        for (int i = 0; i < height; i++) {
-            pixels[i] = std::vector<color>(width);
-        }
+        pixels.resize(width * height);
     }
 
-    void set_pixel(const int x, const int y, const color& c) {
-        pixels[y][x] = c;
+    inline void set_pixel(const int x, const int y, const color& c) {
+        pixels[y * width + x] = c;
     }
 
     [[nodiscard]] color get_pixel(const int x, const int y) const {
-        return pixels[y][x];
+        return pixels[y * width + x];
     }
 };
 
 inline void write_image(std::ostream& out, const output_image& image) {
-    std::cout << "P3\n" << image.width << ' ' << image.height << "\n255\n";
+    out << "P3\n" << image.width << ' ' << image.height << "\n255\n";
     for (int i = 0; i < image.height; i++) {
         for (int j = 0; j < image.width; j++) {
-            write_color(out, image.pixels[i][j]);
+            write_color(out, image.pixels[i * image.width + j]);
         }
     }
 }
