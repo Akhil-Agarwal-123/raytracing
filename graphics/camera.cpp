@@ -45,7 +45,7 @@ output_image camera::capture_image(const hittable_list &scene) const {
             color c;
 
             int valid_cnt = 0;
-            for (int z = 0; z < 100; z++) {
+            for (int z = 0; z < 200; z++) {
                 // Directly pull from the local_rng object on the stack
                 double rand_i = local_rng.dist(local_rng.engine);
                 double rand_j = local_rng.dist(local_rng.engine);

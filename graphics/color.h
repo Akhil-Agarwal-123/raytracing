@@ -7,19 +7,18 @@
 
 using color = vec3;
 
-inline void write_color(std::ostream& out, const color& pixel_color) {
-    auto r = pixel_color.x();
-    auto g = pixel_color.y();
-    auto b = pixel_color.z();
+inline double linear_to_gamma(double linear_component) {
+    return std::sqrt(std::max(linear_component, 0.));
+}
 
-    // Translate the [0,1] component values to the byte range [0,255].
+inline void write_color(std::ostream& out, const color& pixel_color) {
+    auto r = linear_to_gamma(pixel_color.x());
+    auto g = linear_to_gamma(pixel_color.y());
+    auto b = linear_to_gamma(pixel_color.z());
+
     int rbyte = static_cast<int>(255.999 * r);
     int gbyte = static_cast<int>(255.999 * g);
     int bbyte = static_cast<int>(255.999 * b);
-
-    rbyte = std::max(rbyte, 0);
-    gbyte = std::max(gbyte, 0);
-    bbyte = std::max(bbyte, 0);
 
     // Write out the pixel color components.
     out << rbyte << ' ' << gbyte << ' ' << bbyte << '\n';
