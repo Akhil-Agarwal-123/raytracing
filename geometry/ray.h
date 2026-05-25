@@ -3,19 +3,23 @@
 
 #include "vec3.h"
 
+class hittable;
+
 class ray {
 public:
-    ray(const vec3& origin, const vec3& direction) : orig(origin), dir(direction) {}
+    ray(const vec3& origin, const vec3& direction, const double refractive_index) : orig(origin), dir(direction), refractive_index(refractive_index) {}
 
-    [[nodiscard]] vec3 origin() const { return orig; }
-    [[nodiscard]] vec3 direction() const { return dir; }
+    vec3 origin() const { return orig; }
+    vec3 direction() const { return dir; }
+    double n() const { return refractive_index; }
 
-    [[nodiscard]] vec3 at(const double t) const {
+    vec3 at(const double t) const {
         return orig + t * dir;
     }
 
 private:
     vec3 orig, dir;
+    double refractive_index;
 };
 
 #endif //RAYTRACING_RAY_H

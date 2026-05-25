@@ -17,6 +17,10 @@ inline void write_color(std::ostream& out, const color& pixel_color) {
     int gbyte = static_cast<int>(255.999 * g);
     int bbyte = static_cast<int>(255.999 * b);
 
+    rbyte = std::max(rbyte, 0);
+    gbyte = std::max(gbyte, 0);
+    bbyte = std::max(bbyte, 0);
+
     // Write out the pixel color components.
     out << rbyte << ' ' << gbyte << ' ' << bbyte << '\n';
 }

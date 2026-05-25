@@ -13,6 +13,7 @@ class collision_info {
 public:
     vec3 contact_point;
     vec3 normal;
+    bool leaving;
     double distance;
     std::shared_ptr<material> texture;
 

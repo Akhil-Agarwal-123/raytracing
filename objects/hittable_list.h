@@ -6,8 +6,6 @@
 #include "hittable.h"
 #include "../geometry/ray.h"
 #include "../graphics/color.h"
-#include "../geometry/collision_info.h"
-#include "../graphics/material.h" // Safe to include!
 
 class hittable_list {
 public:

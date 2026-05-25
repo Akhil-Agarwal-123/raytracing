@@ -9,18 +9,14 @@ class hittable_list;
 
 class material {
 public:
+    double refractive_index;
+
     virtual ~material() = default;
     virtual color get_color(const hittable_list &scene, const ray &incoming_ray, const collision_info &hit_info, int max_bounces) = 0;
-};
 
-class matte : public material {
-public:
-    matte(color c);
-    color get_color(const hittable_list &scene, const ray& incoming_ray, const collision_info& hit_info, int max_bounces) override;
-
-private:
-    color c;
+protected:
     static vec3 random_in_hemisphere(const vec3 &normal);
+    static vec3 reflected(const ray &incoming, const vec3 &normal);
 };
 
 class lambertian : public material {
@@ -39,7 +35,18 @@ public:
 
 private:
     color c;
-    static vec3 reflected(const ray &incoming, const vec3 &normal);
+};
+
+class dielectric : public material {
+public:
+    dielectric(color absorption_rates, double object_reflectivity, double refractive_index);
+    color get_color(const hittable_list& scene, const ray& incoming_ray, const collision_info& hit_info, int max_bounces) override;
+
+private:
+    color absorption_rates;
+    double object_reflectivity;
+
+    double get_fresnel_reflection_amount(const ray &incoming, const collision_info& hit_info) const;
 };
 
 class light_source : public material {

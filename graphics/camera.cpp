@@ -21,14 +21,15 @@ camera::camera(vec3 origin, vec3 forward, vec3 up, double fov, int horizontal_re
 output_image camera::capture_image(const hittable_list &scene) const {
     output_image img(vertical_resolution, horizontal_resolution);
 
-#pragma omp parallel for shared(img, scene) schedule(dynamic, 8)
+    #pragma omp parallel for shared(img, scene) schedule(dynamic, 8)
     for (int i = 0; i < vertical_resolution; i++) {
         auto& local_rng = rng::get_state();
 
         for (int j = 0; j < horizontal_resolution; j++) {
             color c;
-            for (int z = 0; z < 100; z++) {
 
+            int valid_cnt = 0;
+            for (int z = 0; z < 100; z++) {
                 // Directly pull from the local_rng object on the stack
                 double rand_i = local_rng.dist(local_rng.engine);
                 double rand_j = local_rng.dist(local_rng.engine);
@@ -36,11 +37,15 @@ output_image camera::capture_image(const hittable_list &scene) const {
                 const ray r(origin, unit_vector(
                     forward * viewport_distance
                     + up * (vertical_resolution/2.0 - (i + rand_i))
-                    + right * (-horizontal_resolution/2.0 + (j + rand_j))));
+                    + right * (-horizontal_resolution/2.0 + (j + rand_j))), 1.0);
 
-                c += scene.get_raytraced_color(r);
+                color x = scene.get_raytraced_color(r);
+                if (x.x() >= 0.0 && x.x() <= 1.0 && x.y() >= 0.0 && x.y() <= 1.0) {
+                    valid_cnt++;
+                    c += x;
+                }
             }
-            c /= 100;
+            c /= valid_cnt;
             img.set_pixel(j, i, c);
         }
     }

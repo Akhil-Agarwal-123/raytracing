@@ -10,11 +10,23 @@
 int main() {
     camera cam(vec3(0.0, 5.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.0, 1.0, 0.0), 40.0, 1280, 720);
     hittable_list scene;
-    scene.add_hittable(std::make_shared<sphere>(5.0, vec3(0.0, 5.0, -40.0), std::make_shared<lambertian>(color(.21, .0, .25))));
-    scene.add_hittable(std::make_shared<sphere>(5.0, vec3(10.0, 5.0, -45.0), std::make_shared<metal>(color(.8, .8, .8))));
-    scene.add_hittable(std::make_shared<sphere>(2.0, vec3(-8.0, 10.0, -45.0), std::make_shared<metal>(color(.2, .2, .2))));
-    scene.add_hittable(std::make_shared<sphere>(3.0, vec3(-13.0, 7.0, -40.0), std::make_shared<metal>(color(.4, .4, .2))));
-    scene.add_hittable(std::make_shared<sphere>(10000.0, vec3(0.0, -10000.0, -20.0), std::make_shared<lambertian>(color(0.8, 0.8, 0.0))));
+    scene.add_hittable(std::make_shared<sphere>(3.0, vec3(-5.0, 3.0, -40.0), std::make_shared<dielectric>(
+        0.2 * color(3.0, .5, 0.0), 0.0, 1.5)));
+    scene.add_hittable(std::make_shared<sphere>(2.5, vec3(7.0, 2.5, -43.0), std::make_shared<dielectric>(
+        0.1 * color(0.0, 1.0, .2), 0.0, 1.5)));
+    scene.add_hittable(std::make_shared<sphere>(2.0, vec3(4.0, 6.0, -37.0), std::make_shared<dielectric>(
+        0.3 * color(1.0, 0.0, 2.0), 0.0, 1.5)));
+    scene.add_hittable(std::make_shared<sphere>(2.0, vec3(2.0, 2.0, -33.0), std::make_shared<dielectric>(
+        color(0.1, 0.1, 0.1), 0.0, 1.5)));
+    // scene.add_hittable(std::make_shared<sphere>(1.5, vec3(2.0, 2.0, -33.0), std::make_shared<dielectric>(
+    //     color(), 0.0, 1.0)));
+    // scene.add_hittable(std::make_shared<sphere>(1, vec3(2.0, 2.0, -33.0), std::make_shared<dielectric>(
+    //     2 * color(8.0, 2.0, 0), 0.0, 1.5)));
+    scene.add_hittable(std::make_shared<sphere>(5.0, vec3(0.0, 5.0, -50.0), std::make_shared<lambertian>(color(.21, .0, .25))));
+    // scene.add_hittable(std::make_shared<sphere>(5.0, vec3(10.0, 5.0, -55.0), std::make_shared<metal>(color(.8, .8, .8))));
+    scene.add_hittable(std::make_shared<sphere>(2.0, vec3(-8.0, 10.0, -55.0), std::make_shared<metal>(color(.2, .2, .2))));
+    scene.add_hittable(std::make_shared<sphere>(3.0, vec3(-13.0, 7.0, -50.0), std::make_shared<metal>(color(.4, .4, .2))));
+    scene.add_hittable(std::make_shared<sphere>(10000.0, vec3(0.0, -10000.0, -30.0), std::make_shared<lambertian>(color(0.8, 0.8, 0.8))));
     scene.add_hittable(std::make_shared<sphere>(1e5, vec3(), std::make_shared<light_source>()));
     auto img = cam.capture_image(scene);
 

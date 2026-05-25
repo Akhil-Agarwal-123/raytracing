@@ -2,11 +2,9 @@
 
 #include <memory>
 #include <vector>
-#include "hittable.h"
 #include "../geometry/ray.h"
 #include "../graphics/color.h"
 #include "../geometry/collision_info.h"
-#include "../graphics/material.h" // Safe to include!
 
 void hittable_list::add_hittable(const std::shared_ptr<hittable>& hittable) {
     if (hittable) {
@@ -23,12 +21,9 @@ color hittable_list::get_raytraced_color(ray r, int max_bounces) const {
     for (const auto &h : hittables) {
         if (h->hit(r, hit_info_temp)) {
             if (!got_result || hit_info_temp.distance < hit_info.distance) {
-                hit_info.contact_point = hit_info_temp.contact_point;
-                hit_info.distance = hit_info_temp.distance;
-                hit_info.normal = hit_info_temp.normal;
-                hit_info.texture = hit_info_temp.texture;
+                std::swap(hit_info, hit_info_temp);
+                got_result = true;
             }
-            got_result = true;
         }
     }
 

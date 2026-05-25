@@ -13,7 +13,7 @@ bool sphere::hit(ray& r, collision_info& hit_info) {
     double b = -2 * dot(dist, r.direction());
     double c = dot(dist, dist) - radius * radius;
     double discriminant = b * b - 4 * c;
-    if (discriminant < 0) {
+    if (discriminant <= 0) {
         return false;
     }
     double sqrt_discriminant = sqrt(discriminant);
