@@ -9,12 +9,11 @@
 
 class hittable_list {
 public:
+    std::vector<std::shared_ptr<hittable>> hittables;
+
     void add_hittable(const std::shared_ptr<hittable>& hittable);
 
     color get_raytraced_color(ray r, int max_bounces = 10) const;
-
-private:
-    std::vector<std::shared_ptr<hittable>> hittables;
 };
 
 #endif //RAYTRACING_HITTABLE_LIST_H

@@ -2,14 +2,14 @@
 #define RAYTRACING_TEXTURE_H
 
 #include "color.h"
-#include "../geometry/ray.h"
 
 class collision_info;
 class hittable_list;
+class ray;
 
 class material {
 public:
-    double refractive_index;
+    double refractive_index = 1.0;
 
     virtual ~material() = default;
     virtual color get_color(const hittable_list &scene, const ray &incoming_ray, const collision_info &hit_info, int max_bounces) = 0;
