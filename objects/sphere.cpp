@@ -9,8 +9,8 @@ sphere::sphere(const double radius, const vec3 &center, const std::shared_ptr<ma
 }
 
 bool sphere::hit(ray& r, collision_info& hit_info) {
-    vec3 dist = center - r.origin();
-    double b = -2 * dot(dist, r.direction());
+    vec3 dist = center - r.orig;
+    double b = -2 * dot(dist, r.dir);
     double c = dot(dist, dist) - radius * radius;
     double discriminant = b * b - 4 * c;
     if (discriminant <= 0) {
@@ -18,9 +18,9 @@ bool sphere::hit(ray& r, collision_info& hit_info) {
     }
     double sqrt_discriminant = sqrt(discriminant);
     double t = (-b - sqrt_discriminant)/2;
-    if (t <= eps) {
+    if (t <= 0.0) {
         t = (-b + sqrt_discriminant)/2;
-        if (t <= eps) {
+        if (t <= 0.0) {
             return false;
         }
     }

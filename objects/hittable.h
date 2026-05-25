@@ -12,9 +12,6 @@ public:
     std::shared_ptr<material> mat;
     virtual ~hittable() = default;
     virtual bool hit(ray &r, collision_info &hit_info) = 0;
-
-protected:
-    double eps = 1e-2;
 };
 
 #endif //RAYTRACING_HITTABLE_H

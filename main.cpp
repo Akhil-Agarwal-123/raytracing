@@ -35,7 +35,7 @@ int main() {
     // scene.add_hittable(std::make_shared<sphere>(3e4, vec3(0.0, -1e4, 0.0), std::make_shared<light_source>()));
 
     // light source above objects
-    scene.add_hittable(std::make_shared<sphere>(30, vec3(5.0, 45.0, -40.0), std::make_shared<light_source>()));
+    scene.add_hittable(std::make_shared<sphere>(30, vec3(5.0, 45.0, -40.0), std::make_shared<light_source>(color(1.0, 1.0, 1.0))));
 
     auto img = cam.capture_image(scene);
 

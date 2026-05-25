@@ -10,9 +10,10 @@ class ray;
 class material {
 public:
     double refractive_index = 1.0;
+    color absorption_rates;
 
     virtual ~material() = default;
-    virtual color get_color(const hittable_list &scene, const ray &incoming_ray, const collision_info &hit_info, int max_bounces) = 0;
+    virtual bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) = 0;
 
 protected:
     static vec3 random_in_hemisphere(const vec3 &normal);
@@ -22,7 +23,7 @@ protected:
 class lambertian : public material {
 public:
     lambertian(color c);
-    color get_color(const hittable_list &scene, const ray& incoming_ray, const collision_info& hit_info, int max_bounces) override;
+    bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) override;
 
 private:
     color c;
@@ -31,7 +32,7 @@ private:
 class metal : public material {
 public:
     metal(color c);
-    color get_color(const hittable_list& scene, const ray& incoming_ray, const collision_info& hit_info, int max_bounces) override;
+    bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) override;
 
 private:
     color c;
@@ -39,19 +40,22 @@ private:
 
 class dielectric : public material {
 public:
-    dielectric(color absorption_rates, double object_reflectivity, double refractive_index);
-    color get_color(const hittable_list& scene, const ray& incoming_ray, const collision_info& hit_info, int max_bounces) override;
+    dielectric(const color& absorption_rates, double object_reflectivity, double refractive_index);
+    bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) override;
 
 private:
-    color absorption_rates;
     double object_reflectivity;
 
-    double get_fresnel_reflection_amount(const ray &incoming, const collision_info& hit_info) const;
+    double get_fresnel_reflection_amount(ray &incoming, const collision_info &hit_info) const;
 };
 
 class light_source : public material {
 public:
-    color get_color(const hittable_list &scene, const ray& incoming_ray, const collision_info& hit_info, int max_bounces) override;
+    light_source(const color& c);
+    bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) override;
+    
+private:
+    color c;
 };
 
 #endif //RAYTRACING_TEXTURE_H
