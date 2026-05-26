@@ -27,6 +27,8 @@ add_executable(raytracing main.cpp
         geometry/aabb.h
         objects/box.cpp
         objects/box.h
+        geometry/bvh.h
+        geometry/bvh.cpp
 )
 target_compile_options(raytracing PRIVATE -march=native -ffast-math)
 

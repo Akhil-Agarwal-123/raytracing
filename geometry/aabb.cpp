@@ -2,7 +2,7 @@
 
 aabb::aabb(vec3 low, vec3 high) : low(low), high(high) {}
 
-bool aabb::hit(const ray& incoming_ray) const {
+bool aabb::hit(const ray& incoming_ray, double &distance) const {
     double l = -1e20, r = 1e20;
     for (int d = 0; d < 3; d++) {
         if (incoming_ray.dir.e[d] == 0) {
@@ -16,7 +16,9 @@ bool aabb::hit(const ray& incoming_ray) const {
             r = std::min(r, std::max(t1, t2));
         }
     }
-    return r > 0 && l <= r;
+    if (r <= 0 || l > r) return false;
+    distance = l <= 0 ? r : l;
+    return true;
 }
 
 void aabb::combine(const aabb& other) {

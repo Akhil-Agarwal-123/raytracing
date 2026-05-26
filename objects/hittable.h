@@ -2,6 +2,8 @@
 #define RAYTRACING_HITTABLE_H
 
 #include <memory>
+
+#include "../geometry/aabb.h"
 #include "../geometry/ray.h"
 
 class material;
@@ -12,6 +14,9 @@ public:
     std::shared_ptr<material> mat;
     virtual ~hittable() = default;
     virtual bool hit(ray &r, collision_info &hit_info) = 0;
+
+    virtual aabb get_bounding_box() const = 0;
+    virtual vec3 centroid() const = 0;
 };
 
 #endif //RAYTRACING_HITTABLE_H

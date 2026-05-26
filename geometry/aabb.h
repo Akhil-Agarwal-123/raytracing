@@ -9,7 +9,7 @@ public:
     vec3 low, high;
 
     aabb(vec3 low, vec3 high);
-    bool hit(const ray &incoming_ray) const;
+    bool hit(const ray &incoming_ray, double &distance) const;
     void combine(const aabb &other);
     double surface_area() const;
 };

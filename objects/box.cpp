@@ -44,3 +44,11 @@ bool box::hit(ray& r, collision_info& hit_info) {
     // std::cout << hit_info.distance << " " << hit_info.leaving << std::endl;
     return true;
 }
+
+aabb box::get_bounding_box() const {
+    return {low, high};
+}
+
+vec3 box::centroid() const {
+    return (low + high)/2;
+}

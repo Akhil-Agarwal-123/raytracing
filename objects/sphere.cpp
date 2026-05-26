@@ -30,3 +30,11 @@ bool sphere::hit(ray& r, collision_info& hit_info) {
     hit_info.texture = mat;
     return true;
 }
+
+aabb sphere::get_bounding_box() const {
+    return {center - radius * vec3(1, 1, 1), center + radius * vec3(1, 1, 1)};
+}
+
+vec3 sphere::centroid() const {
+    return center;
+}
