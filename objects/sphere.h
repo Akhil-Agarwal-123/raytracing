@@ -6,7 +6,7 @@
 
 class sphere : public hittable {
 public:
-    sphere(const double radius, const vec3 &center, const std::shared_ptr<material> &t);
+    sphere(double radius, const vec3 &center, const std::shared_ptr<material> &t);
     bool hit(ray& r, collision_info& hit_info) override;
 
 private:

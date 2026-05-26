@@ -23,6 +23,10 @@ add_executable(raytracing main.cpp
         objects/sphere.cpp
         util/rng.h
         objects/hittable_list.cpp
+        geometry/aabb.cpp
+        geometry/aabb.h
+        objects/box.cpp
+        objects/box.h
 )
 target_compile_options(raytracing PRIVATE -march=native -ffast-math)
 

@@ -5,6 +5,7 @@
 #include "graphics/camera.h"
 #include "graphics/material.h"
 #include "graphics/output_image.h"
+#include "objects/box.h"
 #include "objects/sphere.h"
 
 int main() {
@@ -17,10 +18,15 @@ int main() {
     scene.add_hittable(std::make_shared<sphere>(2.0, vec3(4.0, 6.0, -37.0), std::make_shared<dielectric>(
         0.3 * color(1.0, 0.0, 2.0), 0.0, 1.5)));
 
-    // clear ball with another sphere inside
+    // // clear ball with another sphere inside
     scene.add_hittable(std::make_shared<sphere>(2.0, vec3(2.0, 2.0, -33.0), std::make_shared<dielectric>(
         color(0.1, 0.1, 0.1), 0.0, 1.5)));
     scene.add_hittable(std::make_shared<sphere>(1.5, vec3(2.0, 2.0, -33.0), std::make_shared<dielectric>(
+        2 * color(8.0, 2.0, 0), 0.0, 1.0)));
+
+    scene.add_hittable(std::make_shared<box>(vec3(10.0, 0.0, -35.0), vec3(14.0, 4.0, -31.0), std::make_shared<dielectric>(
+        color(0.0, 2.0, 1.0), 0.0, 1.5)));
+    scene.add_hittable(std::make_shared<sphere>(1.5, vec3(12.0, 2.0, -33.0), std::make_shared<dielectric>(
         2 * color(8.0, 2.0, 0), 0.0, 1.0)));
 
     scene.add_hittable(std::make_shared<sphere>(5.0, vec3(0.0, 5.0, -50.0), std::make_shared<lambertian>(color(.21, .0, .25))));
@@ -31,11 +37,11 @@ int main() {
     // the ground
     scene.add_hittable(std::make_shared<sphere>(1e4, vec3(0.0, -1e4, 0.0), std::make_shared<lambertian>(color(0.8, 0.8, 0.8))));
 
-    // // light source all around
-    // scene.add_hittable(std::make_shared<sphere>(3e4, vec3(0.0, -1e4, 0.0), std::make_shared<light_source>()));
+    // light source all around
+    scene.add_hittable(std::make_shared<sphere>(3e4, vec3(0.0, -1e4, 0.0), std::make_shared<light_source>(color(1.0, 1.0, 1.0))));
 
-    // light source above objects
-    scene.add_hittable(std::make_shared<sphere>(30, vec3(5.0, 45.0, -40.0), std::make_shared<light_source>(color(1.0, 1.0, 1.0))));
+    // // light source above objects
+    // scene.add_hittable(std::make_shared<sphere>(30, vec3(5.0, 45.0, -40.0), std::make_shared<light_source>(color(1.0, 1.0, 1.0))));
 
     auto img = cam.capture_image(scene);
 
