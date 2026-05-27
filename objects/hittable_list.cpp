@@ -25,7 +25,7 @@ color hittable_list::get_raytraced_color(ray r, int max_bounces) const {
         vec3 next_dir;
         bool reflecting;
         if (hit_info.texture->get_next_ray(r, hit_info, albedo, next_dir, reflecting)) {
-            if (!reflecting) {
+            if (hit_info.has_volume && !reflecting) {
                 if (hit_info.leaving) r.remove_last_mat();
                 else r.add_new_mat(hit_info.texture);
             }

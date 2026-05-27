@@ -37,7 +37,7 @@ output_image camera::capture_image(const hittable_list &scene) const {
         startingPoint.push(v);
     }
 
-    // #pragma omp parallel for shared(img, scene) schedule(dynamic, 8)
+    #pragma omp parallel for shared(img, scene) schedule(dynamic, 8)
     for (int i = 0; i < vertical_resolution; i++) {
         auto& local_rng = rng::get_state();
 

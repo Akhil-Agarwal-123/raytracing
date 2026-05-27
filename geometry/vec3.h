@@ -114,4 +114,12 @@ inline vec3 unit_vector(const vec3& v) {
     return v / v.length();
 }
 
+inline vec3 min(const vec3& u, const vec3& v) {
+    return {std::min(u.e[0], v.e[0]), std::min(u.e[1], v.e[1]), std::min(u.e[2], v.e[2])};
+}
+
+inline vec3 max(const vec3& u, const vec3& v) {
+    return {std::max(u.e[0], v.e[0]), std::max(u.e[1], v.e[1]), std::max(u.e[2], v.e[2])};
+}
+
 #endif //RAYTRACING_VEC3_H

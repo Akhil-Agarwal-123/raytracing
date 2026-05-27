@@ -15,6 +15,7 @@ public:
     vec3 normal;
     bool leaving;
     double distance;
+    bool has_volume;
     std::shared_ptr<material> texture;
 
     void set_normal(const ray& ray, const vec3& outward_normal);

@@ -8,7 +8,7 @@ sphere::sphere(const double radius, const vec3 &center, const std::shared_ptr<ma
     mat = t;
 }
 
-bool sphere::hit(ray& r, collision_info& hit_info) {
+bool sphere::hit(ray& r, collision_info& hit_info) const {
     vec3 dist = center - r.orig;
     double b = -2 * dot(dist, r.dir);
     double c = dot(dist, dist) - radius * radius;
@@ -28,6 +28,7 @@ bool sphere::hit(ray& r, collision_info& hit_info) {
     hit_info.set_normal(r, (hit_info.contact_point - center)/radius);
     hit_info.distance = t;
     hit_info.texture = mat;
+    hit_info.has_volume = true;
     return true;
 }
 

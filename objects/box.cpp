@@ -6,7 +6,7 @@ box::box(const vec3& low, const vec3& high, const std::shared_ptr<material> &t) 
     mat = t;
 }
 
-bool box::hit(ray& r, collision_info& hit_info) {
+bool box::hit(ray& r, collision_info& hit_info) const {
     int causal_dim_le = -1, causal_dim_ri = -1;
     double le = -1e20, ri = 1e20;
     for (int d = 0; d < 3; d++) {
@@ -41,7 +41,7 @@ bool box::hit(ray& r, collision_info& hit_info) {
     }
     hit_info.set_normal(r, n);
     hit_info.texture = mat;
-    // std::cout << hit_info.distance << " " << hit_info.leaving << std::endl;
+    hit_info.has_volume = true;
     return true;
 }
 

@@ -23,7 +23,7 @@ bool aabb::hit(const ray& incoming_ray, double &distance) const {
         }
     }
     if (r <= 0 || l > r) return false;
-    distance = l <= 0 ? r : l;
+    distance = std::max(0.0, l);
     return true;
 }
 
@@ -35,13 +35,8 @@ void aabb::combine(const aabb& other) {
         high = other.high;
         trivial = false;
     } else {
-        low.e[0] = std::min(low.e[0], other.low.e[0]);
-        low.e[1] = std::min(low.e[1], other.low.e[1]);
-        low.e[2] = std::min(low.e[2], other.low.e[2]);
-
-        high.e[0] = std::max(high.e[0], other.high.e[0]);
-        high.e[1] = std::max(high.e[1], other.high.e[1]);
-        high.e[2] = std::max(high.e[2], other.high.e[2]);
+        low = min(low, other.low);
+        high = max(high, other.high);
     }
 }
 
@@ -51,13 +46,8 @@ void aabb::combine(const vec3& other) {
         high = other;
         trivial = false;
     } else {
-        low.e[0] = std::min(low.e[0], other.e[0]);
-        low.e[1] = std::min(low.e[1], other.e[1]);
-        low.e[2] = std::min(low.e[2], other.e[2]);
-
-        high.e[0] = std::max(high.e[0], other.e[0]);
-        high.e[1] = std::max(high.e[1], other.e[1]);
-        high.e[2] = std::max(high.e[2], other.e[2]);
+        low = min(low, other);
+        high = max(high, other);
     }
 }
 

@@ -29,6 +29,10 @@ add_executable(raytracing main.cpp
         objects/box.h
         geometry/bvh.h
         geometry/bvh.cpp
+        objects/triangle.cpp
+        objects/triangle.h
+        objects/mesh.cpp
+        objects/mesh.h
 )
 target_compile_options(raytracing PRIVATE -march=native -ffast-math)
 
