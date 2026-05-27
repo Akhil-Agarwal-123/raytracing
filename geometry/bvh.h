@@ -29,6 +29,7 @@ public:
 
 std::shared_ptr<bvh> make_bvh(const std::vector<std::shared_ptr<hittable>> &scene);
 std::shared_ptr<bvh> make_bvh(std::vector<hittable_info> &scene, int st, int en);
-bool hit_bvh(const std::shared_ptr<bvh> &root, ray &r, collision_info &hit_info);
+
+bool hit_bvh(const std::vector<std::shared_ptr<hittable>> &scene, const std::shared_ptr<bvh> &root, ray &r, collision_info &hit_info);
 
 #endif //RAYTRACING_BVH_H

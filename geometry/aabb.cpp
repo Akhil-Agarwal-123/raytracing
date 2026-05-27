@@ -1,8 +1,14 @@
 #include "aabb.h"
 
-aabb::aabb(vec3 low, vec3 high) : low(low), high(high) {}
+aabb::aabb() {
+    trivial = true;
+}
+
+aabb::aabb(const vec3& low, const vec3& high) : trivial(false), low(low), high(high) {}
 
 bool aabb::hit(const ray& incoming_ray, double &distance) const {
+    if (trivial) return false;
+
     double l = -1e20, r = 1e20;
     for (int d = 0; d < 3; d++) {
         if (incoming_ray.dir.e[d] == 0) {
@@ -22,16 +28,49 @@ bool aabb::hit(const ray& incoming_ray, double &distance) const {
 }
 
 void aabb::combine(const aabb& other) {
-    low.e[0] = std::min(low.e[0], other.low.e[0]);
-    low.e[1] = std::min(low.e[1], other.low.e[1]);
-    low.e[2] = std::min(low.e[2], other.low.e[2]);
+    if (other.trivial) return;
 
-    high.e[0] = std::max(high.e[0], other.high.e[0]);
-    high.e[1] = std::max(high.e[1], other.high.e[1]);
-    high.e[2] = std::max(high.e[2], other.high.e[2]);
+    if (trivial) {
+        low = other.low;
+        high = other.high;
+        trivial = false;
+    } else {
+        low.e[0] = std::min(low.e[0], other.low.e[0]);
+        low.e[1] = std::min(low.e[1], other.low.e[1]);
+        low.e[2] = std::min(low.e[2], other.low.e[2]);
+
+        high.e[0] = std::max(high.e[0], other.high.e[0]);
+        high.e[1] = std::max(high.e[1], other.high.e[1]);
+        high.e[2] = std::max(high.e[2], other.high.e[2]);
+    }
+}
+
+void aabb::combine(const vec3& other) {
+    if (trivial) {
+        low = other;
+        high = other;
+        trivial = false;
+    } else {
+        low.e[0] = std::min(low.e[0], other.e[0]);
+        low.e[1] = std::min(low.e[1], other.e[1]);
+        low.e[2] = std::min(low.e[2], other.e[2]);
+
+        high.e[0] = std::max(high.e[0], other.e[0]);
+        high.e[1] = std::max(high.e[1], other.e[1]);
+        high.e[2] = std::max(high.e[2], other.e[2]);
+    }
 }
 
 double aabb::surface_area() const {
     const vec3 d = high - low;
     return 2 * (d.x() * d.y() + d.x() * d.z() + d.y() * d.z());
+}
+
+int aabb::longest_axis() const {
+    int d = -1;
+    double mx = -1;
+    for (int i = 0; i < 3; i++) {
+        if (d == -1 || high.e[i] - low.e[i] > mx) d = i;
+    }
+    return d;
 }

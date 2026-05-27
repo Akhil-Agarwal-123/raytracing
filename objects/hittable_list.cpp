@@ -16,20 +16,10 @@ color hittable_list::get_raytraced_color(ray r, int max_bounces) const {
     color c = {1.0, 1.0, 1.0};
 
     for (int bounce = 0; bounce < max_bounces; bounce++) {
-        bool got_result = false;
         collision_info hit_info;
-        collision_info hit_info_temp;
-        for (const auto &h : hittables) {
-            if (h->hit(r, hit_info_temp)) {
-                if (!got_result || hit_info_temp.distance < hit_info.distance) {
-                    if (hit_info_temp.leaving == (r.get_mat_stack().empty() || r.get_mat_stack().top() != hit_info_temp.texture)) continue;
-                    std::swap(hit_info, hit_info_temp);
-                    got_result = true;
-                }
-            }
+        if (!hit_bvh(hittables, bounding_volume_hierarchy, r, hit_info)) {
+            return {};
         }
-
-        if (!got_result) return {}; // black
 
         color albedo;
         vec3 next_dir;
@@ -52,4 +42,8 @@ color hittable_list::get_raytraced_color(ray r, int max_bounces) const {
         }
     }
     return {};
+}
+
+void hittable_list::mark_done() {
+    bounding_volume_hierarchy = make_bvh(hittables);
 }

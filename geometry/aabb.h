@@ -6,12 +6,16 @@
 
 class aabb {
 public:
+    bool trivial;
     vec3 low, high;
 
-    aabb(vec3 low, vec3 high);
+    aabb();
+    aabb(const vec3& low, const vec3& high);
     bool hit(const ray &incoming_ray, double &distance) const;
     void combine(const aabb &other);
+    void combine(const vec3 &other);
     double surface_area() const;
+    int longest_axis() const;
 };
 
 
