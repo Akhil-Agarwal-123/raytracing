@@ -2,11 +2,12 @@
 
 #include <execution>
 #include <map>
-
-#include "../geometry/vec3.h"
 #include <ranges>
 #include <vector>
+#include <atomic>   // Added for thread-safe row counting
+#include <iostream> // Added for progress logging via std::clog
 
+#include "../geometry/vec3.h"
 #include "output_image.h"
 #include "../geometry/collision_info.h"
 #include "../geometry/ray.h"
@@ -37,7 +38,11 @@ output_image camera::capture_image(const hittable_list &scene) const {
         startingPoint.push(v);
     }
 
-    #pragma omp parallel for shared(img, scene) schedule(dynamic, 8)
+    // --- Progress Bar Configurations ---
+    const int bar_width = 40;
+    std::atomic<int> completed_rows(0);
+
+    #pragma omp parallel for shared(img, scene, completed_rows) schedule(dynamic, 8)
     for (int i = 0; i < vertical_resolution; i++) {
         auto& local_rng = rng::get_state();
 
@@ -61,6 +66,28 @@ output_image camera::capture_image(const hittable_list &scene) const {
             c /= samples_per_pixel;
             img.set_pixel(j, i, c);
         }
+
+        // --- Thread-Safe Progress Bar Update ---
+        int current_completed = ++completed_rows;
+
+        // Prevent multiple threads from jumping into console output simultaneously
+        #pragma omp critical
+        {
+            double progress = static_cast<double>(current_completed) / vertical_resolution;
+            int pos = static_cast<int>(bar_width * progress);
+
+            std::clog << "\r[";
+            for (int k = 0; k < bar_width; ++k) {
+                if (k < pos) std::clog << "=";
+                else if (k == pos) std::clog << ">";
+                else std::clog << " ";
+            }
+            std::clog << "] " << static_cast<int>(progress * 100.0) << "%" << std::flush;
+        }
     }
+
+    // Clean up terminal formatting when done
+    std::clog << "\nRender Complete.\n" << std::flush;
+
     return img;
 }

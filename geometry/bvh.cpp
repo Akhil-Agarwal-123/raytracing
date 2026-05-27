@@ -139,13 +139,13 @@ bool hit_bvh(const std::vector<std::shared_ptr<hittable>> &scene, const std::sha
             collision_info temp_hit_info;
             for (const int idx : node->hittable_indices) {
                 if (scene[idx]->hit(r, temp_hit_info)) {
-                    if (temp_hit_info.leaving != (r.get_mat_stack().empty() || r.get_mat_stack().top() != temp_hit_info.texture)) {
+                    // if (temp_hit_info.leaving != (r.get_mat_stack().empty() || r.get_mat_stack().top() != temp_hit_info.texture)) {
                         if (temp_hit_info.distance < closest_so_far) {
                             hit_info = temp_hit_info;
                             hit_anything = true;
                             closest_so_far = hit_info.distance;
                         }
-                    }
+                    // }
                 }
                 ++total_cnt;
             }

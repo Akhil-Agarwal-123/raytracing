@@ -13,12 +13,14 @@ class collision_info {
 public:
     vec3 contact_point;
     vec3 normal;
+    vec3 geometric_normal;
     bool leaving;
     double distance;
     bool has_volume;
     std::shared_ptr<material> texture;
 
     void set_normal(const ray& ray, const vec3& outward_normal);
+    void set_normal(const ray& ray, const vec3& outward_shading_normal, const vec3& geo_normal);
 };
 
 #endif //RAYTRACING_COLLISION_INFO_H

@@ -25,7 +25,7 @@ bool triangle::hit(ray& r, collision_info& hit_info) const {
     hit_info.distance = t;
     hit_info.texture = this->mat;
     hit_info.contact_point = r.at(t);
-    hit_info.set_normal(r, interpolate_outward_normal(u, v));
+    hit_info.set_normal(r, interpolate_outward_normal(u, v), unit_vector(cross(e1, e2)));
     hit_info.has_volume = false;
     return true;
 }

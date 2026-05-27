@@ -149,8 +149,8 @@ int main() {
 
     // 1. Create and add the mesh FIRST so we can inspect its dimensions
     // Changed color to a soft grey (0.7) so it shades beautifully under a bright light
-    // auto chair_mesh = std::make_shared<mesh>("/home/akhil/raytracing/Dragon.obj", std::make_shared<dielectric>(color(8.0, 0, 2.0), 0.0, 1.5));
-    auto chair_mesh = std::make_shared<mesh>("/home/akhil/raytracing/Dragon.obj", std::make_shared<lambertian>(color(.6, .6, .6)));
+    auto chair_mesh = std::make_shared<mesh>("/home/akhil/raytracing/dragon_smooth.obj", std::make_shared<dielectric>(color(8.0, 0, 2.0), 0.0, 1.5));
+    // auto chair_mesh = std::make_shared<mesh>("/home/akhil/raytracing/Dragon.obj", std::make_shared<lambertian>(color(.6, .6, .6)));
     scene.add_hittable(chair_mesh);
 
     // 2. Query the mesh's calculated centroid
@@ -163,13 +163,13 @@ int main() {
     vec3 cam_forward = unit_vector(chair_center - cam_origin); // Look directly at the chair
     vec3 cam_up(0.0, 1.0, 0.0);
 
-    camera cam(cam_origin, cam_forward, cam_up, 40.0, 1080, 720);
+    camera cam(cam_origin, cam_forward, cam_up, 40.0, 3840, 2160);
 
     // 4. Add a localized directional light source above and to the side of the chair
     // This creates shadows and highlights instead of blowing out the scene
     scene.add_hittable(std::make_shared<sphere>(
         100.0,
-        chair_center + vec3(50.0, 150.0, 50.0),
+        chair_center + 1.3 * vec3(-50.0, 150.0, 50.0),
         std::make_shared<light_source>(color(1.0, 1.0, 1.0))
     ));
 
