@@ -1,64 +1,89 @@
 #ifndef RAYTRACING_RNG_H
 #define RAYTRACING_RNG_H
 
-#include <random>
+#include <cstdint>
 #include <cmath>
-#include <numbers>
-#include "../geometry/vec3.h"
+
+#if defined(__CUDACC__)
+    #define CUDA_HOST_DEVICE __host__ __device__
+#else
+    #define CUDA_HOST_DEVICE
+#endif
+
+#ifndef PI_CONST
+#define PI_CONST 3.14159265358979323846f
+#endif
 
 namespace rng {
 
-    // A lightweight per-thread state holder to completely bypass lookup overhead
-    struct ThreadRngState {
-        std::mt19937 engine;
-        std::uniform_real_distribution<double> dist;
+    // Lightweight 8-byte state struct (fits entirely in GPU registers)
+    struct Sampler {
+        uint32_t state;
+        uint32_t inc;
 
-        ThreadRngState() : engine(std::random_device{}()), dist(0.0, 1.0) {}
+        CUDA_HOST_DEVICE Sampler() : state(0x853c49e6u), inc(0xda3e39cbu) {}
+
+        CUDA_HOST_DEVICE explicit Sampler(uint32_t initstate, uint32_t initseq = 1u) {
+            state = 0u;
+            inc = (initseq << 1u) | 1u;
+            next_uint();
+            state += initstate;
+            next_uint();
+        }
+
+        CUDA_HOST_DEVICE uint32_t next_uint() {
+            uint32_t oldstate = state;
+            state = oldstate * 747796405u + inc;
+            uint32_t word = ((oldstate >> ((oldstate >> 28u) + 4u)) ^ oldstate) * 277803737u;
+            return (word >> 22u) ^ word;
+        }
+
+        CUDA_HOST_DEVICE float uniform_float() {
+            return static_cast<float>(next_uint()) * (1.0f / 4294967296.0f);
+        }
+
+        CUDA_HOST_DEVICE float uniform_float(float min, float max) {
+            return min + (max - min) * uniform_float();
+        }
+
+        CUDA_HOST_DEVICE int uniform_int(int min, int max) {
+            return min + static_cast<int>(next_uint() % static_cast<uint32_t>(max - min + 1));
+        }
     };
 
-    // The ONLY thread_local variable. Accessed exactly ONCE per function call.
-    inline ThreadRngState& get_state() {
-        static thread_local ThreadRngState state;
-        return state;
+    CUDA_HOST_DEVICE inline float random_float(Sampler& s) {
+        return s.uniform_float();
     }
 
-    inline double random_double() {
-        auto& state = get_state();
-        return state.dist(state.engine);
+    CUDA_HOST_DEVICE inline float random_float(float min, float max, Sampler& s) {
+        return s.uniform_float(min, max);
     }
 
-    inline double random_double(double min, double max) {
-        return min + (max - min) * random_double();
+    CUDA_HOST_DEVICE inline int random_int(int min, int max, Sampler& s) {
+        return s.uniform_int(min, max);
     }
 
-    inline int random_int(int min, int max) {
-        auto& state = get_state();
-        std::uniform_int_distribution<int> int_dist(min, max);
-        return int_dist(state.engine);
+    CUDA_HOST_DEVICE inline vec3 random_vec3(Sampler& s) {
+        return {s.uniform_float(), s.uniform_float(), s.uniform_float()};
     }
 
-    inline vec3 random_vec3() {
-        auto& state = get_state();
-        return {state.dist(state.engine), state.dist(state.engine), state.dist(state.engine)};
+    CUDA_HOST_DEVICE inline vec3 random_vec3(float min, float max, Sampler& s) {
+        return {s.uniform_float(min, max), s.uniform_float(min, max), s.uniform_float(min, max)};
     }
 
-    inline vec3 random_vec3(double min, double max) {
-        return {random_double(min, max), random_double(min, max), random_double(min, max)};
+    CUDA_HOST_DEVICE inline vec3 random_unit_vector(Sampler& s) {
+        float z = s.uniform_float(-1.0f, 1.0f);
+        float a = s.uniform_float(0.0f, 2.0f * PI_CONST);
+        float r = sqrtf(fmaxf(0.0f, 1.0f - z * z));
+        return {r * cosf(a), r * sinf(a), z};
     }
 
-    inline vec3 random_in_unit_sphere() {
-        while (true) {
-            auto p = random_vec3(-1.0, 1.0);
-            if (p.length_squared() < 1.0) return p;
-        }
+    // Inversion-method unit sphere sampling (avoids GPU warp divergence from while-loops)
+    CUDA_HOST_DEVICE inline vec3 random_in_unit_sphere(Sampler& s) {
+        vec3 u = random_unit_vector(s);
+        float r = cbrtf(s.uniform_float()); // Uniform radial density
+        return {u.x() * r, u.y() * r, u.z() * r};
     }
+} // namespace rng
 
-    inline vec3 random_unit_vector() {
-        double z = random_double(-1.0, 1.0);
-        double a = random_double(0.0, 2.0 * std::numbers::pi);
-        double r = std::sqrt(1.0 - z * z);
-        return {r * std::cos(a), r * std::sin(a), z};
-    }
-}
-
-#endif //RAYTRACING_RNG_H
+#endif // RAYTRACING_RNG_H

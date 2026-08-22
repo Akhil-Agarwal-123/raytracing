@@ -7,6 +7,7 @@
 #include "../geometry/bvh.h"
 #include "../geometry/ray.h"
 #include "../graphics/color.h"
+#include "../util/rng.h"
 
 class hittable_list {
 public:
@@ -16,7 +17,7 @@ public:
     void add_hittable(const std::shared_ptr<hittable>& hittable);
     void mark_done();
 
-    color get_raytraced_color(ray r, int max_bounces = 10) const;
+    color get_raytraced_color(ray r, int max_bounces, rng::Sampler& sampler) const;
 };
 
-#endif //RAYTRACING_HITTABLE_LIST_H
+#endif // RAYTRACING_HITTABLE_LIST_H

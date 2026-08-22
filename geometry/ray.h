@@ -1,7 +1,7 @@
 #ifndef RAYTRACING_RAY_H
 #define RAYTRACING_RAY_H
 
-#include <stack>
+#include <vector>
 #include <memory>
 
 #include "vec3.h"
@@ -11,35 +11,48 @@ class ray {
 public:
     vec3 orig, dir;
 
-    ray(const vec3& origin, const vec3& direction, const std::stack<std::shared_ptr<material>>& prevMaterials, const std::shared_ptr<material>& newMaterial)
-        : materials_stack(prevMaterials), orig(origin), dir(direction) {
-        materials_stack.push(newMaterial);
+    ray(const vec3& origin, const vec3& direction,
+        const std::vector<std::shared_ptr<material>>& prevMaterials,
+        const std::shared_ptr<material>& newMaterial)
+        : orig(origin), dir(direction), materials(prevMaterials) {
+        materials.push_back(newMaterial);
     }
 
-    ray(const vec3& origin, const vec3& direction, const std::stack<std::shared_ptr<material>>& prevMaterials)
-        : materials_stack(prevMaterials), orig(origin), dir(direction) { }
+    ray(const vec3& origin, const vec3& direction,
+        const std::vector<std::shared_ptr<material>>& prevMaterials = {})
+        : orig(origin), dir(direction), materials(prevMaterials) {}
 
-    double n() const {
-        if (materials_stack.empty()) return 1.0;
-        return materials_stack.top()->refractive_index;
+    [[nodiscard]] inline float n() const {
+        if (materials.empty()) return 1.0f;
+        return materials.back()->refractive_index;
     }
-    double next_n() {
-        const auto tmp = materials_stack.top();
-        materials_stack.pop();
-        const double ret = n();
-        materials_stack.push(tmp);
-        return ret;
-    }
-    auto get_mat_stack() const { return materials_stack; }
-    void remove_last_mat() { materials_stack.pop(); }
-    void add_new_mat(const std::shared_ptr<material>& new_mat) { materials_stack.push(new_mat); }
 
-    vec3 at(const double t) const {
+    // Direct access to previous medium without mutation
+    [[nodiscard]] inline float next_n() const {
+        if (materials.size() < 2) return 1.0f;
+        return materials[materials.size() - 2]->refractive_index;
+    }
+
+    [[nodiscard]] const std::vector<std::shared_ptr<material>>& get_mat_stack() const {
+        return materials;
+    }
+
+    inline void remove_last_mat() {
+        if (!materials.empty()) {
+            materials.pop_back();
+        }
+    }
+
+    inline void add_new_mat(const std::shared_ptr<material>& new_mat) {
+        materials.push_back(new_mat);
+    }
+
+    [[nodiscard]] inline vec3 at(const float t) const {
         return orig + t * dir;
     }
 
 private:
-    std::stack<std::shared_ptr<material>> materials_stack;
+    std::vector<std::shared_ptr<material>> materials;
 };
 
-#endif //RAYTRACING_RAY_H
+#endif // RAYTRACING_RAY_H

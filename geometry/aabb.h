@@ -11,12 +11,12 @@ public:
 
     aabb();
     aabb(const vec3& low, const vec3& high);
-    bool hit(const ray &incoming_ray, double &distance) const;
+
+    bool hit(const ray &incoming_ray, float &distance) const;
     void combine(const aabb &other);
     void combine(const vec3 &other);
-    double surface_area() const;
-    int longest_axis() const;
+    [[nodiscard]] float surface_area() const;
+    [[nodiscard]] int longest_axis() const;
 };
 
-
-#endif //RAYTRACING_AABB_H
+#endif // RAYTRACING_AABB_H

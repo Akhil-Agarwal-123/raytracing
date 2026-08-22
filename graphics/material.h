@@ -2,6 +2,8 @@
 #define RAYTRACING_TEXTURE_H
 
 #include "color.h"
+#include "../geometry/vec3.h"
+#include "../util/rng.h"
 
 class collision_info;
 class hittable_list;
@@ -9,21 +11,25 @@ class ray;
 
 class material {
 public:
-    double refractive_index = 1.0;
+    float refractive_index = 1.0f;
     color absorption_rates;
 
     virtual ~material() = default;
-    virtual bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) = 0;
+    virtual bool get_next_ray(const ray &incoming_ray, const collision_info &hit_info,
+                              color &albedo, vec3 &next_dir, bool &reflecting,
+                              rng::Sampler &sampler) const = 0;
 
 protected:
-    static vec3 random_in_hemisphere(const vec3 &normal);
+    static vec3 random_in_hemisphere(const vec3 &normal, rng::Sampler &sampler);
     static vec3 reflected(const ray &incoming, const vec3 &normal);
 };
 
 class lambertian : public material {
 public:
-    lambertian(color c);
-    bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) override;
+    explicit lambertian(color c);
+    bool get_next_ray(const ray &incoming_ray, const collision_info &hit_info,
+                      color &albedo, vec3 &next_dir, bool &reflecting,
+                      rng::Sampler &sampler) const override;
 
 private:
     color c;
@@ -31,8 +37,10 @@ private:
 
 class metal : public material {
 public:
-    metal(color c);
-    bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) override;
+    explicit metal(color c);
+    bool get_next_ray(const ray &incoming_ray, const collision_info &hit_info,
+                      color &albedo, vec3 &next_dir, bool &reflecting,
+                      rng::Sampler &sampler) const override;
 
 private:
     color c;
@@ -40,22 +48,26 @@ private:
 
 class dielectric : public material {
 public:
-    dielectric(const color& absorption_rates, double object_reflectivity, double refractive_index);
-    bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) override;
+    dielectric(const color& absorption_rates, float object_reflectivity, float refractive_index);
+    bool get_next_ray(const ray &incoming_ray, const collision_info &hit_info,
+                      color &albedo, vec3 &next_dir, bool &reflecting,
+                      rng::Sampler &sampler) const override;
 
 private:
-    double object_reflectivity;
+    float object_reflectivity;
 
-    double get_fresnel_reflection_amount(ray &incoming, const collision_info &hit_info) const;
+    float get_fresnel_reflection_amount(const ray &incoming, const collision_info &hit_info) const;
 };
 
 class light_source : public material {
 public:
-    light_source(const color& c);
-    bool get_next_ray(ray &incoming_ray, const collision_info &hit_info, color &albedo, vec3 &next_dir, bool &reflecting) override;
-    
+    explicit light_source(const color& c);
+    bool get_next_ray(const ray &incoming_ray, const collision_info &hit_info,
+                      color &albedo, vec3 &next_dir, bool &reflecting,
+                      rng::Sampler &sampler) const override;
+
 private:
     color c;
 };
 
-#endif //RAYTRACING_TEXTURE_H
+#endif // RAYTRACING_TEXTURE_H

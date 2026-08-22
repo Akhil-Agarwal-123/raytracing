@@ -1,29 +1,48 @@
 #include "aabb.h"
 
-aabb::aabb() {
-    trivial = true;
-}
+#include <cmath>
+#include <algorithm>
 
-aabb::aabb(const vec3& low, const vec3& high) : trivial(false), low(low), high(high) {}
+aabb::aabb() : trivial(true), low(0.0f, 0.0f, 0.0f), high(0.0f, 0.0f, 0.0f) {}
 
-bool aabb::hit(const ray& incoming_ray, double &distance) const {
+aabb::aabb(const vec3& low, const vec3& high)
+    : trivial(false), low(low), high(high) {}
+
+bool aabb::hit(const ray& incoming_ray, float &distance) const {
     if (trivial) return false;
 
-    double l = -1e20, r = 1e20;
-    for (int d = 0; d < 3; d++) {
-        if (incoming_ray.dir.e[d] == 0) {
+    float l = -1e20f;
+    float r =  1e20f;
+
+    for (int d = 0; d < 3; ++d) {
+        if (fabsf(incoming_ray.dir.e[d]) < 1e-8f) {
+            // Ray parallel to slab; check origin
             if (incoming_ray.orig.e[d] < low.e[d] || incoming_ray.orig.e[d] > high.e[d]) {
                 return false;
             }
         } else {
-            double t1 = (low.e[d] - incoming_ray.orig.e[d])/incoming_ray.dir.e[d];
-            double t2 = (high.e[d] - incoming_ray.orig.e[d])/incoming_ray.dir.e[d];
-            l = std::max(l, std::min(t1, t2));
-            r = std::min(r, std::max(t1, t2));
+            float inv_d = 1.0f / incoming_ray.dir.e[d];
+            float t0 = (low.e[d] - incoming_ray.orig.e[d]) * inv_d;
+            float t1 = (high.e[d] - incoming_ray.orig.e[d]) * inv_d;
+
+            if (inv_d < 0.0f) {
+                std::swap(t0, t1);
+            }
+
+            l = fmaxf(l, t0);
+            r = fminf(r, t1);
+
+            if (r <= l) {
+                return false;
+            }
         }
     }
-    if (r <= 0 || l > r) return false;
-    distance = std::max(0.0, l);
+
+    if (r <= 0.001f) {
+        return false;
+    }
+
+    distance = fmaxf(0.0f, l);
     return true;
 }
 
@@ -51,16 +70,19 @@ void aabb::combine(const vec3& other) {
     }
 }
 
-double aabb::surface_area() const {
+float aabb::surface_area() const {
+    if (trivial) return 0.0f;
     const vec3 d = high - low;
-    return 2 * (d.x() * d.y() + d.x() * d.z() + d.y() * d.z());
+    return 2.0f * (d.x() * d.y() + d.x() * d.z() + d.y() * d.z());
 }
 
 int aabb::longest_axis() const {
-    int d = -1;
-    double mx = -1;
-    for (int i = 0; i < 3; i++) {
-        if (d == -1 || high.e[i] - low.e[i] > mx) d = i;
+    vec3 extent = high - low;
+    if (extent.x() > extent.y() && extent.x() > extent.z()) {
+        return 0;
     }
-    return d;
+    if (extent.y() > extent.z()) {
+        return 1;
+    }
+    return 2;
 }

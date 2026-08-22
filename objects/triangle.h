@@ -11,11 +11,11 @@ public:
     triangle(const vec3& p1, const vec3& p2, const vec3& p3, const vec3& n_p1, const vec3& n_p2, const vec3& n_p3, const std::shared_ptr<material>& mat);
 
     bool hit(ray& r, collision_info& hit_info) const override;
-    vec3 interpolate_outward_normal(double u, double v) const;
+    vec3 interpolate_outward_normal(float u, float v) const;
 
     aabb get_bounding_box() const override;
     vec3 centroid() const override;
-    double surface_area() const;
+    float surface_area() const;
 };
 
 

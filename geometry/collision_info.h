@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "vec3.h"
-#include "ray.h"
 #include "../graphics/material.h"
 
 class material;
@@ -15,7 +14,7 @@ public:
     vec3 normal;
     vec3 geometric_normal;
     bool leaving;
-    double distance;
+    float distance;
     bool has_volume;
     std::shared_ptr<material> texture;
 
